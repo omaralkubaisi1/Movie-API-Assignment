@@ -65,3 +65,25 @@ INSERT INTO Favorite (UserID, MovieID) VALUES
 ((SELECT UserID FROM MovieUser WHERE Username = 'reimarii'), (SELECT MovieID FROM Movie WHERE Name = 'Inception')),
 ((SELECT UserID FROM MovieUser WHERE Username = 'lizzy'), (SELECT MovieID FROM Movie WHERE Name = 'Interstellar')),
 ((SELECT UserID FROM MovieUser WHERE Username = 'boss'), (SELECT MovieID FROM Movie WHERE Name = 'The Terminator'));
+
+-- Tarkistetaan, että kaikki taulut näyttävät sisältönsä
+SELECT * FROM Genre;
+SELECT * FROM Movie;
+SELECT * FROM MovieUser;
+SELECT * FROM Review;
+SELECT * FROM Favorite;
+
+-- Testataan tauluja monimutkaisemmilla kyselyillä
+SELECT Movie.Name AS Movie_Name, Movie.Year, Genre.Name AS Genre_Name
+FROM Movie
+JOIN Genre ON Movie.GenreID = Genre.GenreID;
+
+SELECT MovieUser.Name AS User_Name, Review.Stars, Review.ReviewText
+FROM Review
+JOIN MovieUser ON Review.UserID = MovieUser.UserID
+WHERE Review.MovieID = 2;  -- Esim. elokuva ID 2: "The Terminator"
+
+SELECT Movie.Name AS Favorite_Movie
+FROM Favorite
+JOIN Movie ON Favorite.MovieID = Movie.MovieID
+WHERE Favorite.UserID = 3;  -- Esim. käyttäjä ID 3: "Ben Bossy"
