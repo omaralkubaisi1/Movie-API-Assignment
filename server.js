@@ -197,6 +197,31 @@ app.get('/favorites/:username', async (req, res) => {
     }
 });
 
+// Genre-specific movie recommendations
+app.get('/movies/recommend/:genre', async (req, res) => {
+    const genre = req.params.genre;
+    try {
+        const genreResult = await client.query('SELECT GenreID FROM Genre WHERE Name = $1', [genre]);
+        if (genreResult.rowCount === 0) {
+            return res.status(404).json({ error: `Genre '${genre}' not found` });
+        }
+        const genreId = genreResult.rows[0].genreid;
+        const result = await client.query(
+            `SELECT m.MovieID, m.Name, m.Year
+             FROM Movie m
+             WHERE m.GenreID = $1
+             ORDER BY random() LIMIT 5`,
+            [genreId]
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'No movies found for this genre' });
+        }
+        res.json({ genre, recommendations: result.rows });
+    } catch (error) {
+        res.status(500).json({ error: 'Database error' });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
